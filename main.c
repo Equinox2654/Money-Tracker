@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
 
     if (argc == 5) {
 	if (strcmp(argv[1], "budget") == 0) {
+	    items = fopen("items.txt", "a"); fclose(items);
 	    items = fopen("items.txt", "rb");
 	    if (!items) { perror("Error Opening File"); return 1; }
 
@@ -63,6 +64,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	    }
 	    buffer[bytesRead] = '\0';
+	    fclose(items); items = fopen("items.txt", "a");
 
 	    if (strcmp(argv[2], "check") == 0) {
 		/// <Important>TODO: Finish</Important>
