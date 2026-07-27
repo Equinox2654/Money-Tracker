@@ -1,6 +1,8 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <regex.h>
 
 int main(int argc, char *argv[]) {
     FILE *balance;
@@ -66,19 +68,36 @@ int main(int argc, char *argv[]) {
 	    buffer[bytesRead] = '\0';
 	    fclose(items); items = fopen("items.txt", "a");
 
+	    int max_lines = 64;
+	    char **lines = malloc(max_lines * (sizeof(char *)));
+
+	    char *token = strtok(buffer, "\n");
+
+	    int iteration = 0;
+	    while (token != NULL) {
+		if (iteration >= max_lines) {
+		    max_lines *= 2;
+		    lines = realloc(lines, max_lines * sizeof(char *));
+		}
+		lines[iteration++] = token;
+		token = strtok(NULL, "\n");
+	    }
+
 	    if (strcmp(argv[2], "check") == 0) {
 		/// <Important>TODO: Finish</Important>
+
 	    }
 	    else if (strcmp(argv[2], "add") == 0) {
 		char *item = argv[3];
-		int cost = strtod(argv[4], NULL);
+		double cost = strtod(argv[4], NULL);
 		if (!cost) {
 		    perror("Invalid pricing for item");
 		    return 1;
 		}
-		fprintf(items, "%s: %d\n", item, cost);
-		printf("%s: %d\n", item, cost);
+		fprintf(items, "%s: %f\n", item, cost);
+		printf("%s: %f\n", item, cost);
 	    }
+	    free(lines);
 	    free(buffer);
 	    fclose(items);
 	}
@@ -86,7 +105,7 @@ int main(int argc, char *argv[]) {
 
     fclose(log);
 
-    if (strcmp(argv[1], "help") == 0) {
+    if (argc == 2 && strcmp(argv[1], "help") == 0) {
 	printf("Tracks money:\nAdd: command adds money\nSpend: command spends money\n\nYou have $%.2f left.\n", balance_amount);
     }
 
