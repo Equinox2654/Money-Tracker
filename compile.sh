@@ -1,1 +1,1 @@
-clang -o money main.c
+gcc -o money main.c
